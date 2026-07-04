@@ -56,7 +56,7 @@ Before the Lorenz VM executes a single instruction, the **Butterfly Profiler** p
 Requires [Rust](https://rustup.rs/) to be installed.
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/lorenz-lang.git
+git clone https://github.com/amirhosseinbahramizadeh/LorenzLang.git
 cd lorenz-lang
 cargo build --release
 ```
