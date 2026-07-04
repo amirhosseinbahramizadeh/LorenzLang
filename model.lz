@@ -1,0 +1,5 @@
+let pressure = chaotic(101.0, 0.1)
+let volume = chaotic(50.0, 0.5)
+let temp = chaotic(22.0, 0.2)
+
+collapse(propagate(pressure + volume + temp, 5.0))

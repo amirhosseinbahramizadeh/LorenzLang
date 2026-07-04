@@ -1,0 +1,65 @@
+{
+  "name": "lorenz-language",
+  "displayName": "Lorenz Language Support",
+  "description": "Syntax highlighting and run support for the Lorenz chaotic systems language",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:lorenz",
+    "onCommand:lorenz.runFile"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.0.0"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "lorenz",
+        "aliases": [
+          "Lorenz",
+          "lorenz"
+        ],
+        "extensions": [
+          ".lz"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "lorenz",
+        "scopeName": "source.lorenz",
+        "path": "./syntaxes/lorenz.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "lorenz.runFile",
+        "title": "Lorenz: Run Current File",
+        "icon": "$(play)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "lorenz.runFile",
+        "key": "ctrl+shift+l",
+        "mac": "cmd+shift+l",
+        "when": "editorLangId == lorenz"
+      }
+    ]
+  }
+}
