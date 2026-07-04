@@ -1,6 +1,4 @@
 
-```markdown
-
 # 🦋 Lorenz
 ### The World's First Deterministic Chaos Programming Language
 
