@@ -1,8 +1,5 @@
 
 ```markdown
-<div align="center">
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Lorenz_attractor_yb.svg" alt="Lorenz Attractor" width="400"/>
 
 # 🦋 Lorenz
 ### The World's First Deterministic Chaos Programming Language
