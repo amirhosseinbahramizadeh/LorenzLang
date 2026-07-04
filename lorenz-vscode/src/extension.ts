@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
         });
 
         terminal.show();
-        terminal.sendText(`lorenz run "${filePath}"`);
+        terminal.sendText(`& 'C:\\Users\\LENOVO\\Desktop\\Programming-Lang-PD\\target\\release\\lorenz.exe' "${filePath}"`);
     });
 
     context.subscriptions.push(runFileCommand);

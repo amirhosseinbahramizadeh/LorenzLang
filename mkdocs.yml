@@ -1,0 +1,62 @@
+site_name: Lorenz Language
+site_description: "The world's first programming language with native support for Chaos Theory and the Butterfly Effect."
+site_url: https://lorenz-lang.dev
+
+repo_name: amirhosseinbahramizadeh/Programming-Lang-PD
+repo_url: https://github.com/amirhosseinbahramizadeh/Programming-Lang-PD
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: pink
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: pink
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Military Simulation Example: military.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/amirhosseinbahramizadeh/Programming-Lang-PD
+    - icon: fontawesome/brands/rust
+      link: https://www.rust-lang.org/
+
+copyright: Copyright &copy; 2026 Lorenz Language Contributors

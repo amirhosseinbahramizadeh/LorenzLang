@@ -3,6 +3,9 @@ mod parser;
 mod profiler;
 mod compiler;
 mod vm;
+mod server;
+#[cfg(target_arch = "wasm32")]
+mod wasm_bridge;
 
 use std::env;
 use std::fs;
@@ -16,16 +19,37 @@ use vm::ChaosVM;
 
 const MAX_ALLOWED_VARIANCE: f64 = 1000.0;
 
-fn main() {
+#[actix_web::main]
+async fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
         eprintln!("Usage: lorenz <filename.lz>");
+        eprintln!("       lorenz serve");
         process::exit(1);
     }
 
-    let filename = &args[1];
+    match args[1].as_str() {
+        "serve" => {
+            if let Err(e) = server::start_server().await {
+                eprintln!("Server error: {}", e);
+                process::exit(1);
+            }
+        }
+        "run" => {
+            if args.len() < 3 {
+                eprintln!("Usage: lorenz run <filename.lz>");
+                process::exit(1);
+            }
+            run_file(&args[2]);
+        }
+        filename => {
+            run_file(filename);
+        }
+    }
+}
 
+fn run_file(filename: &str) {
     // Read the file
     let code = match fs::read_to_string(filename) {
         Ok(content) => content,

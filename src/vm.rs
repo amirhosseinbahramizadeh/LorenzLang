@@ -118,6 +118,94 @@ impl ChaosVM {
         }
     }
 
+    /// Runs the bytecode silently, returning the final value and debug state string.
+    /// Used by WASM bridge to capture output without printing to stderr.
+    pub fn run_silent(&mut self) -> Result<(f64, String), String> {
+        loop {
+            if self.ip >= self.code.len() {
+                return Err("Execution ended without COLLAPSE instruction".to_string());
+            }
+
+            let opcode_byte = self.code[self.ip];
+            let opcode = OpCode::from_byte(opcode_byte)
+                .ok_or_else(|| format!("Unknown opcode: 0x{:02x}", opcode_byte))?;
+
+            match opcode {
+                OpCode::LOAD_VAR => {
+                    self.ip += 1;
+                    let name = self.read_string()?;
+                    let var = self.state
+                        .get_var(&name)
+                        .cloned()
+                        .ok_or_else(|| format!("Runtime Error: Undefined variable '{}'", name))?;
+                    self.stack.push(var);
+                }
+
+                OpCode::LITERAL => {
+                    self.ip += 1;
+                    let value = self.read_f64()?;
+                    self.stack.push(ChaoticVar::deterministic(value));
+                }
+
+                OpCode::ADD => {
+                    self.ip += 1;
+                    let b = self.stack_pop()?;
+                    let a = self.stack_pop()?;
+
+                    let cov = self.get_covariance_from_stack(&a, &b);
+                    let new_mean = a.mean + b.mean;
+                    let new_variance = a.variance + b.variance + 2.0 * cov;
+
+                    let mut new_sensitivity = a.sensitivity_map.clone();
+                    for (key, value) in &b.sensitivity_map {
+                        *new_sensitivity.entry(key.clone()).or_insert(0.0) += value;
+                    }
+
+                    let result = ChaoticVar::new(new_mean, new_variance, Some(new_sensitivity));
+                    self.stack.push(result);
+                }
+
+                OpCode::PROPAGATE => {
+                    self.ip += 1;
+                    let time_step = self.read_f64()?;
+                    let mut var = self.stack_pop()?;
+                    var.propagate(time_step);
+                    self.stack.push(var);
+                }
+
+                OpCode::COLLAPSE => {
+                    self.ip += 1;
+                    let var = self.stack_pop()?;
+                    let debug_state = format!(
+                        "Mean: {:.3}, Variance: {:.3}, StdDev: {:.3}",
+                        var.mean, var.variance, var.variance.sqrt()
+                    );
+                    return Ok((var.collapse(), debug_state));
+                }
+
+                OpCode::CHAOTIC => {
+                    self.ip += 1;
+                    let mean = self.read_f64()?;
+                    let variance = self.read_f64()?;
+                    let var = ChaoticVar::new(mean, variance, Some(HashMap::new()));
+                    self.stack.push(var);
+                }
+
+                OpCode::LET => {
+                    self.ip += 1;
+                    let name = self.read_string()?;
+                    let var = self.stack_pop()?;
+                    self.state.add_var(name, var);
+                }
+
+                OpCode::POP => {
+                    self.ip += 1;
+                    self.stack_pop()?;
+                }
+            }
+        }
+    }
+
     /// Reads a u16 length prefix followed by that many bytes as a UTF-8 string.
     fn read_string(&mut self) -> Result<String, String> {
         if self.ip + 2 > self.code.len() {

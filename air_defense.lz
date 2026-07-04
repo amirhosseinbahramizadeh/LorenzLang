@@ -1,0 +1,9 @@
+let radar_angle = chaotic(45.2, 0.15)       
+let radar_velocity = chaotic(1200.0, 50.0)  
+let electronic_jamming_noise = chaotic(0.0, 5.0) 
+
+let raw_trajectory = radar_angle + radar_velocity + electronic_jamming_noise
+
+let future_target_position = propagate(raw_trajectory, 10.0)
+
+collapse(future_target_position)

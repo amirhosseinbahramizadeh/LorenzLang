@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorenz Language - Chaos Theory in Your Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+
+        .editor-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .editor-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 14px;
+            color: #e6edf3;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b2cbf 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-box {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 300px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .output-success {
+            border: 1px solid #238636;
+            background: rgba(35, 134, 54, 0.1);
+        }
+
+        .output-error {
+            border: 1px solid #da3633;
+            background: rgba(218, 54, 51, 0.1);
+        }
+
+        .output-debug {
+            border: 1px solid #1f6feb;
+            background: rgba(31, 111, 235, 0.1);
+        }
+
+        .output-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .label-success { color: #3fb950; }
+        .label-error { color: #f85149; }
+        .label-debug { color: #58a6ff; }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .butterfly {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="butterfly">🦋</div>
+            <h1>Lorenz Language</h1>
+            <p class="subtitle">The world's first programming language with native support for Chaos Theory</p>
+        </header>
+
+        <div class="editor-section">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Code Editor</span>
+                    <button class="btn" id="runBtn" onclick="runCode()">Run Lorenz</button>
+                </div>
+                <textarea id="codeEditor" spellcheck="false">// Air Defense Radar Simulation
+// Sensor noise modeled as probability clouds
+
+let radar_a = chaotic(120.0, 4.0)    // 120km ± 2km
+let radar_b = chaotic(118.0, 9.0)    // 118km ± 3km
+let radar_c = chaotic(121.0, 1.0)    // 121km ± 1km
+
+// Covariance-aware sensor fusion
+let fused = (radar_a + radar_b + radar_c) / 3.0
+
+// Predict position in 30 seconds
+let predicted = propagate(fused, 30.0)
+
+// Collapse to engagement solution
+collapse(predicted)</textarea>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Output</span>
+                </div>
+                <div class="output-box" id="outputBox">
+                    <span class="output-label label-debug">Ready to execute</span>
+                    Click "Run Lorenz" to execute your code...
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by Rust + WebAssembly | <a href="https://github.com/amirhosseinbahramizadeh/Programming-Lang-PD">GitHub</a></p>
+        </footer>
+    </div>
+
+    <script type="module" src="./index.js"></script>
+</body>
+</html>
